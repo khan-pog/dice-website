@@ -69,6 +69,14 @@ export function normalizeCheckoutToOrderPayload(input: {
     shippingAmount,
     totalAmount,
     currency,
-    couponCode: session.metadata?.couponCode ?? undefined,
+    couponCode: (() => {
+      const discount = session.discounts?.[0]
+      if (!discount) return undefined
+      const promo = discount.promotion_code
+      if (typeof promo === "object" && promo !== null && "code" in promo) {
+        return (promo as { code: string }).code
+      }
+      return undefined
+    })(),
   }
 }

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const constructEventMock = vi.fn()
 const listLineItemsMock = vi.fn()
+const retrieveSessionMock = vi.fn()
 const mutationMock = vi.fn()
 const sendOrderConfirmationEmailMock = vi.fn()
 
@@ -13,6 +14,7 @@ vi.mock("@/lib/stripe", () => ({
     checkout: {
       sessions: {
         listLineItems: listLineItemsMock,
+        retrieve: retrieveSessionMock,
       },
     },
   },
@@ -67,6 +69,24 @@ describe("stripe webhook route", () => {
 
     listLineItemsMock.mockResolvedValue({
       data: [{ description: "Shadowthorn Gothic Dice Set", quantity: 1, price: { unit_amount: 4999 }, currency: "usd" }],
+    })
+
+    retrieveSessionMock.mockResolvedValue({
+      id: "cs_123",
+      payment_intent: "pi_123",
+      currency: "usd",
+      amount_subtotal: 4999,
+      amount_total: 4999,
+      total_details: { amount_discount: 0, amount_shipping: 0 },
+      metadata: {
+        cart: JSON.stringify([{ productId: "shadowthorn-gothic-dice", quantity: 1 }]),
+      },
+      customer_details: {
+        email: "buyer@example.com",
+        name: "Buyer",
+        address: { country: "US" },
+      },
+      discounts: [],
     })
 
     mutationMock

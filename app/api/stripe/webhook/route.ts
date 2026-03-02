@@ -49,11 +49,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true, duplicate: true })
   }
 
-  const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
-    limit: 100,
-  })
+  const [lineItems, expandedSession] = await Promise.all([
+    stripe.checkout.sessions.listLineItems(session.id, { limit: 100 }),
+    stripe.checkout.sessions.retrieve(session.id, {
+      expand: ["discounts.promotion_code"],
+    }),
+  ])
   const payload = normalizeCheckoutToOrderPayload({
-    session,
+    session: expandedSession,
     lineItems,
     stripeEventId: event.id,
   })
