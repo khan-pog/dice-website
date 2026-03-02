@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, X, Dice5, ShoppingCart } from "lucide-react"
+import { Menu, X, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 
@@ -21,7 +21,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <Dice5 className="h-7 w-7 text-primary" />
+          <img src="/logo.png" alt="Arcane Dice Co." className="h-8 w-8 rounded" />
           <span className="text-lg font-bold tracking-tight text-foreground">
             Arcane Dice Co.
           </span>

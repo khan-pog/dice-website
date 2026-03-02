@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Dice5 } from "lucide-react"
 
 export function Footer() {
   return (
@@ -8,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <Dice5 className="h-6 w-6 text-primary" />
+              <img src="/logo.png" alt="Arcane Dice Co." className="h-7 w-7 rounded" />
               <span className="font-bold text-foreground">Arcane Dice Co.</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
