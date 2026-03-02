@@ -1,52 +1,26 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
+import Link from "next/link"
 import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DiceFace } from "./dice-face"
-
-const products = [
-  {
-    name: "Obsidian Night",
-    price: "$48",
-    description: "Jet-black resin with gold leaf numbering. Seven-piece set.",
-    image: "/images/dice-obsidian.jpg",
-    tag: "Best Seller",
-  },
-  {
-    name: "Crimson Ember",
-    price: "$52",
-    description: "Deep red translucent resin with silver inlay. Seven-piece set.",
-    image: "/images/dice-crimson.jpg",
-    tag: "New",
-  },
-  {
-    name: "Emerald Rift",
-    price: "$55",
-    description: "Forest green crystal with gold etched numerals. Seven-piece set.",
-    image: "/images/dice-emerald.jpg",
-    tag: "Limited",
-  },
-  {
-    name: "Sapphire Abyss",
-    price: "$50",
-    description: "Ocean blue shimmer with platinum numbers. Seven-piece set.",
-    image: "/images/dice-sapphire.jpg",
-    tag: null,
-  },
-]
+import { PRODUCTS, formatPrice } from "@/lib/products"
+import { useCart } from "@/lib/cart-context"
+import type { Product } from "@/lib/products"
 
 function ProductCard({
   product,
   index,
 }: {
-  product: (typeof products)[0]
+  product: Product
   index: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [diceValue, setDiceValue] = useState(index + 1)
   const [rolling, setRolling] = useState(false)
+  const { addItem } = useCart()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -65,7 +39,9 @@ function ProductCard({
     return () => observer.disconnect()
   }, [])
 
-  const handleRoll = useCallback(() => {
+  const handleRoll = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     setRolling(true)
     setDiceValue(Math.floor(Math.random() * 6) + 1)
     setTimeout(() => setRolling(false), 600)
@@ -79,41 +55,47 @@ function ProductCard({
       }`}
       style={{ transitionDelay: `${index * 150}ms` }}
     >
-      <div className="relative aspect-square overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-background/20 group-hover:bg-background/10 transition-colors" />
+      <Link href={`/product/${product.id}`}>
+        <div className="relative aspect-square overflow-hidden">
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-background/20 group-hover:bg-background/10 transition-colors" />
 
-        {product.tag && (
-          <span className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md">
-            {product.tag}
-          </span>
-        )}
+          {product.tag && (
+            <span className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md">
+              {product.tag}
+            </span>
+          )}
 
-        {/* Dice roll overlay */}
-        <button
-          onClick={handleRoll}
-          className="absolute top-4 right-4 cursor-pointer"
-          aria-label="Roll dice"
-        >
-          <div className={rolling ? "animate-dice-bounce" : "hover:scale-110 transition-transform"}>
-            <DiceFace value={diceValue} size={48} />
-          </div>
-        </button>
-      </div>
+          <button
+            onClick={handleRoll}
+            className="absolute top-4 right-4 cursor-pointer"
+            aria-label="Roll dice"
+          >
+            <div className={rolling ? "animate-dice-bounce" : "hover:scale-110 transition-transform"}>
+              <DiceFace value={diceValue} size={48} />
+            </div>
+          </button>
+        </div>
+      </Link>
 
       <div className="p-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-bold text-foreground">{product.name}</h3>
-          <span className="text-lg font-bold text-primary">{product.price}</span>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-          {product.description}
-        </p>
-        <Button className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors gap-2">
+        <Link href={`/product/${product.id}`}>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-bold text-foreground">{product.name}</h3>
+            <span className="text-lg font-bold text-primary">{formatPrice(product.priceInCents)}</span>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+            {product.shortDescription}
+          </p>
+        </Link>
+        <Button
+          className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors gap-2"
+          onClick={() => addItem(product)}
+        >
           <ShoppingCart className="h-4 w-4" />
           Add to Cart
         </Button>
@@ -134,13 +116,13 @@ export function ProductSection() {
             Forged for Every Quest
           </h2>
           <p className="mt-4 text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Each set is precision-milled, hand-polished, and balanced to ensure every roll is fair and every game is unforgettable.
+            Each set is precision-crafted, hand-polished, and balanced to ensure every roll is fair and every game is unforgettable.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, i) => (
-            <ProductCard key={product.name} product={product} index={i} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {PRODUCTS.map((product, i) => (
+            <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
       </div>
