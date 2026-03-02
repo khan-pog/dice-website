@@ -19,34 +19,42 @@ describe("startCheckoutSession", () => {
 
   it("throws when cart is empty", async () => {
     const { startCheckoutSession } = await import("./stripe")
-    await expect(startCheckoutSession([])).rejects.toThrow("Cart is empty")
+    await expect(startCheckoutSession([], "https://example.com")).rejects.toThrow("Cart is empty")
   })
 
   it("throws when product id is invalid", async () => {
     const { startCheckoutSession } = await import("./stripe")
 
     await expect(
-      startCheckoutSession([{ productId: "not-a-real-product", quantity: 1 }])
+      startCheckoutSession([{ productId: "not-a-real-product", quantity: 1 }], "https://example.com")
     ).rejects.toThrow('Product with id "not-a-real-product" not found')
   })
 
-  it("creates embedded checkout session and returns client secret", async () => {
-    createSessionMock.mockResolvedValue({ client_secret: "cs_test_123" })
+  it("creates hosted checkout session and returns session id", async () => {
+    createSessionMock.mockResolvedValue({ id: "cs_test_123" })
     const { startCheckoutSession } = await import("./stripe")
 
     const result = await startCheckoutSession([
       { productId: "shadowthorn-gothic-dice", quantity: 2 },
       { productId: "eye-of-sauron-resin-dice", quantity: 1 },
-    ])
+    ], "https://example.com")
 
     expect(result).toBe("cs_test_123")
     expect(createSessionMock).toHaveBeenCalledTimes(1)
 
     expect(createSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        ui_mode: "embedded",
-        redirect_on_completion: "never",
         mode: "payment",
+        allow_promotion_codes: true,
+        metadata: {
+          cart: JSON.stringify([
+            { productId: "shadowthorn-gothic-dice", quantity: 2 },
+            { productId: "eye-of-sauron-resin-dice", quantity: 1 },
+          ]),
+          source: "arcane-dice-web",
+        },
+        success_url: "https://example.com/checkout?status=success",
+        cancel_url: "https://example.com/checkout?status=cancelled",
         shipping_address_collection: {
           allowed_countries: ["US", "CA", "GB", "AU", "DE", "FR", "JP"],
         },
@@ -74,5 +82,13 @@ describe("startCheckoutSession", () => {
         ],
       })
     )
+  })
+
+  it("throws when origin is invalid", async () => {
+    const { startCheckoutSession } = await import("./stripe")
+
+    await expect(
+      startCheckoutSession([{ productId: "shadowthorn-gothic-dice", quantity: 1 }], "javascript:alert(1)")
+    ).rejects.toThrow("Invalid checkout origin")
   })
 })

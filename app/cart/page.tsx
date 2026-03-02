@@ -1,18 +1,55 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/products"
+import { loadStripe } from "@stripe/stripe-js"
+import { startCheckoutSession } from "@/app/actions/stripe"
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+)
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const [checkoutError, setCheckoutError] = useState("")
 
   const shippingFree = totalPrice >= 7500
   const shippingCost = shippingFree ? 0 : 595
+
+  async function handleProceedToCheckout() {
+    setCheckoutError("")
+    setIsRedirecting(true)
+
+    try {
+      const stripe = await stripePromise
+      if (!stripe) {
+        throw new Error("Stripe failed to load. Please refresh and try again.")
+      }
+
+      const lineItems = items.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+      }))
+
+      const sessionId = await startCheckoutSession(lineItems, window.location.origin)
+      const result = await stripe.redirectToCheckout({ sessionId })
+
+      if (result.error?.message) {
+        throw new Error(result.error.message)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to start checkout."
+      setCheckoutError(message)
+      setIsRedirecting(false)
+    }
+  }
 
   return (
     <>
@@ -131,16 +168,21 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  <Link href="/checkout" className="block mt-6">
-                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
-                      Proceed to Checkout
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={handleProceedToCheckout}
+                    disabled={isRedirecting}
+                    className="w-full mt-6 bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+                  >
+                    {isRedirecting ? "Redirecting..." : "Proceed to Checkout"}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
 
                   <p className="text-xs text-muted-foreground text-center mt-4">
                     Taxes calculated at checkout
                   </p>
+                  {checkoutError ? (
+                    <p className="text-xs text-destructive text-center mt-2">{checkoutError}</p>
+                  ) : null}
                 </div>
               </div>
             </div>

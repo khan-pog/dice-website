@@ -8,9 +8,13 @@ interface CartLineItem {
   quantity: number
 }
 
-export async function startCheckoutSession(lineItems: CartLineItem[]) {
+export async function startCheckoutSession(lineItems: CartLineItem[], origin: string) {
   if (!lineItems.length) {
     throw new Error("Cart is empty")
+  }
+
+  if (!origin.startsWith("http://") && !origin.startsWith("https://")) {
+    throw new Error("Invalid checkout origin")
   }
 
   const stripeLineItems = lineItems.map((item) => {
@@ -33,14 +37,23 @@ export async function startCheckoutSession(lineItems: CartLineItem[]) {
   })
 
   const session = await stripe.checkout.sessions.create({
-    ui_mode: "embedded",
-    redirect_on_completion: "never",
     line_items: stripeLineItems,
     mode: "payment",
+    allow_promotion_codes: true,
+    metadata: {
+      cart: JSON.stringify(lineItems),
+      source: "arcane-dice-web",
+    },
+    success_url: `${origin}/checkout?status=success`,
+    cancel_url: `${origin}/checkout?status=cancelled`,
     shipping_address_collection: {
       allowed_countries: ["US", "CA", "GB", "AU", "DE", "FR", "JP"],
     },
   })
 
-  return session.client_secret
+  if (!session.id) {
+    throw new Error("Unable to create checkout session")
+  }
+
+  return session.id
 }
