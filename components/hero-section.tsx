@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { ArrowDown } from "lucide-react"
 import { DiceFace } from "./dice-face"
 import { Button } from "@/components/ui/button"
@@ -26,11 +27,11 @@ export function HeroSection() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="/images/hero-dice.jpg"
+          src="/images/products/shadowthorn-3.jpg"
           alt=""
-          className="h-full w-full object-cover opacity-30"
+          className="h-full w-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-background/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-6 py-24 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 w-full">
@@ -48,12 +49,16 @@ export function HeroSection() {
             Premium polyhedral dice, precision-balanced and hand-finished. Each set is a work of art designed for the discerning player.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
-              Explore Collection
-            </Button>
-            <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-secondary px-8">
-              Our Process
-            </Button>
+            <Link href="/#collection">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8">
+                Explore Collection
+              </Button>
+            </Link>
+            <Link href="/about">
+              <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-secondary px-8">
+                Our Story
+              </Button>
+            </Link>
           </div>
 
           <p className="mt-10 text-xs text-muted-foreground tracking-widest uppercase flex items-center gap-2 justify-center lg:justify-start">
@@ -62,14 +67,31 @@ export function HeroSection() {
           </p>
         </div>
 
-        {/* Floating dice */}
+        {/* Product showcase images */}
         <div className="flex-1 flex justify-center items-center">
-          <div className="relative w-64 h-64 md:w-80 md:h-80">
+          <div className="relative w-80 h-80 md:w-[420px] md:h-[420px]">
+            {/* Main image */}
+            <div className="absolute inset-4 rounded-2xl overflow-hidden border border-border shadow-2xl shadow-primary/10">
+              <img
+                src="/images/products/shadowthorn-1.jpg"
+                alt="Shadowthorn Gothic Dice"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {/* Secondary image */}
+            <div className="absolute -bottom-4 -right-4 w-36 h-36 md:w-44 md:h-44 rounded-xl overflow-hidden border-2 border-border shadow-xl">
+              <img
+                src="/images/products/eye-of-sauron-2.jpg"
+                alt="Eye of Sauron Dice"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            {/* Floating dice */}
             {heroValues.map((val, i) => {
               const positions = [
-                { top: "0%", left: "25%", delay: "0s" },
-                { top: "40%", left: "0%", delay: "1s" },
-                { top: "35%", left: "55%", delay: "2s" },
+                { top: "-8%", left: "-8%", delay: "0s" },
+                { top: "20%", left: "-14%", delay: "1s" },
+                { top: "-5%", left: "75%", delay: "2s" },
               ]
               return (
                 <div
@@ -83,7 +105,7 @@ export function HeroSection() {
                 >
                   <DiceFace
                     value={val}
-                    size={i === 0 ? 100 : i === 1 ? 80 : 90}
+                    size={i === 0 ? 56 : i === 1 ? 44 : 50}
                   />
                 </div>
               )

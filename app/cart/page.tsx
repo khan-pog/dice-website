@@ -1,0 +1,153 @@
+"use client"
+
+import Link from "next/link"
+import { Minus, Plus, Trash2, ShoppingCart, ArrowLeft, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
+import { useCart } from "@/lib/cart-context"
+import { formatPrice } from "@/lib/products"
+
+export default function CartPage() {
+  const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
+
+  const shippingFree = totalPrice >= 7500
+  const shippingCost = shippingFree ? 0 : 595
+
+  return (
+    <>
+      <Navbar />
+      <main className="pt-24 pb-16 px-6 min-h-screen">
+        <div className="mx-auto max-w-4xl">
+          <Link
+            href="/#collection"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Continue Shopping
+          </Link>
+
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+            Your Cart {totalItems > 0 && <span className="text-muted-foreground text-xl">({totalItems} {totalItems === 1 ? "item" : "items"})</span>}
+          </h1>
+
+          {items.length === 0 ? (
+            <div className="text-center py-24">
+              <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+              <h2 className="text-xl font-bold text-foreground mb-2">Your cart is empty</h2>
+              <p className="text-muted-foreground mb-8">
+                Looks like you haven{"'"}t added any dice to your collection yet.
+              </p>
+              <Link href="/#collection">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  Browse Collection
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Cart items */}
+              <div className="flex-1 flex flex-col gap-4">
+                {items.map((item) => (
+                  <div
+                    key={item.product.id}
+                    className="flex gap-4 p-4 bg-card rounded-xl border border-border"
+                  >
+                    <Link href={`/product/${item.product.id}`} className="flex-shrink-0">
+                      <img
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        className="w-24 h-24 rounded-lg object-cover"
+                      />
+                    </Link>
+
+                    <div className="flex-1 min-w-0">
+                      <Link href={`/product/${item.product.id}`}>
+                        <h3 className="font-bold text-foreground truncate">{item.product.name}</h3>
+                      </Link>
+                      <p className="text-sm text-muted-foreground mt-1">{item.product.includes}</p>
+                      <p className="text-primary font-bold mt-2">
+                        {formatPrice(item.product.priceInCents)}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col items-end justify-between">
+                      <button
+                        onClick={() => removeItem(item.product.id)}
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                        aria-label="Remove item"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+
+                      <div className="flex items-center border border-border rounded-lg">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                          className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="px-3 py-1 text-sm font-medium text-foreground">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                          className="px-2 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Order summary */}
+              <div className="lg:w-80 flex-shrink-0">
+                <div className="bg-card rounded-xl border border-border p-6 sticky top-28">
+                  <h2 className="text-lg font-bold text-foreground mb-4">Order Summary</h2>
+
+                  <div className="flex flex-col gap-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-foreground font-medium">{formatPrice(totalPrice)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shipping</span>
+                      <span className={`font-medium ${shippingFree ? "text-primary" : "text-foreground"}`}>
+                        {shippingFree ? "FREE" : formatPrice(shippingCost)}
+                      </span>
+                    </div>
+                    {!shippingFree && (
+                      <p className="text-xs text-muted-foreground">
+                        Free shipping on orders over $75.00
+                      </p>
+                    )}
+                    <div className="border-t border-border pt-3 flex justify-between">
+                      <span className="font-bold text-foreground">Total</span>
+                      <span className="font-bold text-foreground text-lg">
+                        {formatPrice(totalPrice + shippingCost)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Link href="/checkout" className="block mt-6">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+                      Proceed to Checkout
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+
+                  <p className="text-xs text-muted-foreground text-center mt-4">
+                    Taxes calculated at checkout
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </>
+  )
+}
