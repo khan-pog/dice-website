@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { ArrowLeft, CheckCircle2, XCircle, ShoppingCart } from "lucide-react"
@@ -79,7 +79,7 @@ function EmptyCartView() {
   )
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const status = searchParams.get("status")
   const { items } = useCart()
@@ -101,22 +101,32 @@ export default function CheckoutPage() {
 
   return (
     <>
+      {status !== "success" && status !== "cancelled" && (
+        <>
+          <Link
+            href="/cart"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Cart
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Checkout</h1>
+        </>
+      )}
+      {content}
+    </>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <>
       <Navbar />
       <main className="pt-24 pb-16 px-6 min-h-screen">
         <div className="mx-auto max-w-3xl">
-          {status !== "success" && status !== "cancelled" && (
-            <>
-              <Link
-                href="/cart"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Cart
-              </Link>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Checkout</h1>
-            </>
-          )}
-          {content}
+          <Suspense>
+            <CheckoutContent />
+          </Suspense>
         </div>
       </main>
       <Footer />
