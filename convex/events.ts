@@ -1,7 +1,7 @@
-import { mutationGeneric } from "convex/server"
+import { mutation } from "./_generated/server"
 import { v } from "convex/values"
 
-export const reserveEventProcessing = mutationGeneric({
+export const reserveEventProcessing = mutation({
   args: {
     eventId: v.string(),
     eventType: v.string(),
@@ -29,7 +29,7 @@ export const reserveEventProcessing = mutationGeneric({
   },
 })
 
-export const completeEventProcessing = mutationGeneric({
+export const completeEventProcessing = mutation({
   args: {
     eventId: v.string(),
     orderId: v.optional(v.id("orders")),

@@ -1,4 +1,4 @@
-import { mutationGeneric, queryGeneric } from "convex/server"
+import { mutation, query } from "./_generated/server"
 import { v } from "convex/values"
 
 function buildOrderNumber() {
@@ -27,7 +27,7 @@ const lineItemValidator = v.object({
   currency: v.string(),
 })
 
-export const createOrderFromCheckoutEvent = mutationGeneric({
+export const createOrderFromCheckoutEvent = mutation({
   args: {
     stripeSessionId: v.string(),
     stripePaymentIntentId: v.optional(v.string()),
@@ -91,7 +91,7 @@ export const createOrderFromCheckoutEvent = mutationGeneric({
   },
 })
 
-export const listPendingFulfillment = queryGeneric({
+export const listPendingFulfillment = query({
   args: {},
   returns: v.array(
     v.object({
@@ -138,7 +138,7 @@ export const listPendingFulfillment = queryGeneric({
   },
 })
 
-export const getOrderByStripeSessionId = queryGeneric({
+export const getOrderByStripeSessionId = query({
   args: { stripeSessionId: v.string() },
   returns: v.union(
     v.object({
@@ -172,7 +172,7 @@ export const getOrderByStripeSessionId = queryGeneric({
   },
 })
 
-export const markOrderFulfilled = mutationGeneric({
+export const markOrderFulfilled = mutation({
   args: {
     orderId: v.id("orders"),
     trackingNumber: v.optional(v.string()),
@@ -190,7 +190,7 @@ export const markOrderFulfilled = mutationGeneric({
   },
 })
 
-export const markOrderCancelled = mutationGeneric({
+export const markOrderCancelled = mutation({
   args: {
     orderId: v.id("orders"),
     reason: v.optional(v.string()),
