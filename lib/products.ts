@@ -63,6 +63,57 @@ export const PRODUCTS: Product[] = [
     material: "Crystal-clear resin with embedded eye design and red numbering",
     inStock: true,
   },
+  {
+    id: "sakura-spirit-resin-dice",
+    name: "Sakura Spirit Resin Dice Set",
+    shortDescription: "Hand-painted cherry blossom art sealed in frosted white resin. Seven-piece polyhedral set.",
+    description:
+      "Born from the quiet beauty of a cherry blossom bloom, the Sakura Spirit set captures the fleeting grace of spring within milky-white resin. Each die features hand-painted crimson blossoms and ink-black branches that seem to float beneath the frosted surface. Silver numbering catches the light with every roll, making this set as beautiful at the table as it is on display.",
+    priceInCents: 4999,
+    images: [
+      "/images/products/sakura-spirit-1.jpg",
+      "/images/products/sakura-spirit-2.jpg",
+      "/images/products/sakura-spirit-3.jpg",
+      "/images/products/sakura-spirit-4.jpg",
+      "/images/products/sakura-spirit-5.jpg",
+      "/images/products/sakura-spirit-6.jpg",
+    ],
+    tag: "New Arrival",
+    features: [
+      "Hand-painted cherry blossom art on every face",
+      "Frosted white resin creates a dreamy depth effect",
+      "Silver raised numbering for effortless readability",
+      "Each die is individually handcrafted and unique",
+    ],
+    includes: "D4, D6, D8, D10, D10 (percentile), D12, D20",
+    material: "Frosted white resin with hand-painted cherry blossom inlay and silver numbering",
+    inStock: true,
+  },
+  {
+    id: "iron-citadel-metal-dice",
+    name: "Iron Citadel Metal Dice Set",
+    shortDescription: "Solid brass-finished metal with deep-engraved fortress patterns. Seven-piece polyhedral set.",
+    description:
+      "Forged for those who demand weight behind every roll. The Iron Citadel set is machined from solid metal and finished in brushed brass-gold, with deep geometric engravings inspired by ancient fortress architecture. The satisfying heft of each die commands attention the moment it hits the table. Bold black-filled numbers cut through the intricate pattern for instant readability. These are not just dice — they are weapons.",
+    priceInCents: 7999,
+    images: [
+      "/images/products/iron-citadel-1.jpg",
+      "/images/products/iron-citadel-2.jpg",
+      "/images/products/iron-citadel-3.jpg",
+      "/images/products/iron-citadel-4.jpg",
+      "/images/products/iron-citadel-5.jpg",
+    ],
+    tag: "Premium",
+    features: [
+      "Solid metal construction with satisfying weight and roll",
+      "Deep-engraved fortress geometric pattern on every face",
+      "Brushed brass-gold finish with black-filled numbering",
+      "Precision-machined for balanced, fair rolls",
+    ],
+    includes: "D4, D6, D8, D10, D10 (percentile), D12, D20",
+    material: "Solid metal with brushed brass-gold finish and black-engraved numbering",
+    inStock: true,
+  },
 ]
 
 export function getProduct(id: string): Product | undefined {
