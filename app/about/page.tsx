@@ -6,8 +6,19 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-  title: "About Us | Arcane Dice Co.",
-  description: "Learn about the story behind Arcane Dice Co. and our commitment to crafting premium handmade dice.",
+  title: "About Us",
+  description: "Learn about the story behind Arcane Dice Co. and our commitment to crafting premium handmade dice for tabletop gaming.",
+  openGraph: {
+    title: "About Us | Arcane Dice Co.",
+    description: "Learn about the story behind Arcane Dice Co. and our commitment to crafting premium handmade dice for tabletop gaming.",
+    images: [{ url: "/images/products/shadowthorn-3.jpg", alt: "Arcane Dice Co. handcrafted dice" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | Arcane Dice Co.",
+    description: "Learn about the story behind Arcane Dice Co. and our commitment to crafting premium handmade dice for tabletop gaming.",
+    images: ["/images/products/shadowthorn-3.jpg"],
+  },
 }
 
 const values = [
@@ -43,7 +54,7 @@ export default function AboutPage() {
           <div className="absolute inset-0">
             <img
               src="/images/products/shadowthorn-3.jpg"
-              alt=""
+              alt="Arcane Dice Co. premium handcrafted dice"
               className="h-full w-full object-cover opacity-15"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background" />
