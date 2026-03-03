@@ -9,15 +9,46 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/products"
-import type { Product } from "@/lib/products"
+import type { Product, ProductVariant } from "@/lib/products"
 
-export function ProductDetailClient({ product }: { product: Product }) {
+interface ProductDetailClientProps {
+  product: Product
+  initialVariantId?: string
+}
+
+export function ProductDetailClient({ product, initialVariantId }: ProductDetailClientProps) {
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const { addItem } = useCart()
 
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    initialVariantId
+      ? (product.variants?.find((v) => v.id === initialVariantId) ?? null)
+      : null
+  )
+
+  const displayImages = selectedVariant ? selectedVariant.images : product.images
+  const displayTag = selectedVariant !== null ? (selectedVariant.tag ?? null) : product.tag
+  const displayDescription = selectedVariant?.description ?? product.description
+  const displayMaterial = selectedVariant?.material ?? product.material
+  const displayFeatures = selectedVariant?.features ?? product.features
+  const displayPrice = selectedVariant?.priceInCents ?? product.priceInCents
+
   const handleAdd = () => {
-    addItem(product, quantity)
+    const cartProduct = selectedVariant
+      ? {
+          ...product,
+          id: selectedVariant.id,
+          name: `${product.name} — ${selectedVariant.name}`,
+          images: selectedVariant.images,
+          tag: selectedVariant.tag !== undefined ? (selectedVariant.tag ?? null) : product.tag,
+          description: selectedVariant.description ?? product.description,
+          material: selectedVariant.material ?? product.material,
+          features: selectedVariant.features ?? product.features,
+          priceInCents: selectedVariant.priceInCents ?? product.priceInCents,
+        }
+      : product
+    addItem(cartProduct, quantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
@@ -38,31 +69,102 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Gallery */}
-            <ProductGallery images={product.images} name={product.name} />
+            <ProductGallery
+              key={selectedVariant?.id ?? "original"}
+              images={displayImages}
+              name={product.name}
+            />
 
             {/* Product info */}
             <div className="flex flex-col">
-              {product.tag && (
+              {displayTag && (
                 <span className="inline-flex self-start bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md mb-4">
-                  {product.tag}
+                  {displayTag}
                 </span>
               )}
 
               <h1 className="text-3xl md:text-4xl font-bold text-foreground text-balance">
                 {product.name}
+                {selectedVariant && (
+                  <span className="text-primary"> — {selectedVariant.name}</span>
+                )}
               </h1>
 
               <p className="text-3xl font-bold text-primary mt-4">
-                {formatPrice(product.priceInCents)}
+                {formatPrice(displayPrice)}
               </p>
 
               <p className="text-muted-foreground leading-relaxed mt-6">
-                {product.description}
+                {displayDescription}
               </p>
+
+              {/* Variant selector */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="mt-6">
+                  <p className="text-sm font-medium text-foreground mb-3">
+                    Style:{" "}
+                    <span className="text-primary font-semibold">
+                      {selectedVariant ? selectedVariant.name : "Original"}
+                    </span>
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {/* Original option */}
+                    <button
+                      onClick={() => setSelectedVariant(null)}
+                      className={`flex flex-col items-center gap-1.5 group`}
+                      aria-label="Original"
+                    >
+                      <div className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedVariant === null
+                          ? "border-primary ring-2 ring-primary/30"
+                          : "border-border hover:border-primary/50"
+                      }`}>
+                        <img
+                          src={product.images[0]}
+                          alt="Original"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className={`text-xs font-medium ${
+                        selectedVariant === null ? "text-primary" : "text-muted-foreground"
+                      }`}>
+                        Original
+                      </span>
+                    </button>
+
+                    {/* Variant options */}
+                    {product.variants.map((variant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`flex flex-col items-center gap-1.5 group`}
+                        aria-label={variant.name}
+                      >
+                        <div className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                          selectedVariant?.id === variant.id
+                            ? "border-primary ring-2 ring-primary/30"
+                            : "border-border hover:border-primary/50"
+                        }`}>
+                          <img
+                            src={variant.images[0]}
+                            alt={variant.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className={`text-xs font-medium ${
+                          selectedVariant?.id === variant.id ? "text-primary" : "text-muted-foreground"
+                        }`}>
+                          {variant.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Features */}
               <ul className="mt-6 flex flex-col gap-2">
-                {product.features.map((feature) => (
+                {displayFeatures.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-foreground">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     {feature}
@@ -78,7 +180,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
               {/* Material */}
               <p className="text-sm text-muted-foreground mt-4">
-                <span className="font-medium text-foreground">Material:</span> {product.material}
+                <span className="font-medium text-foreground">Material:</span> {displayMaterial}
               </p>
 
               {/* Quantity + Add to Cart */}
@@ -116,7 +218,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   ) : (
                     <>
                       <ShoppingCart className="h-5 w-5" />
-                      Add to Cart - {formatPrice(product.priceInCents * quantity)}
+                      Add to Cart - {formatPrice(displayPrice * quantity)}
                     </>
                   )}
                 </Button>

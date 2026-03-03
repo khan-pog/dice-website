@@ -12,21 +12,21 @@ import {
 
 export const metadata: Metadata = {
   title: "FAQ | Arcane Dice Co.",
-  description: "Frequently asked questions about shipping, returns, and our handcrafted dice.",
+  description: "Frequently asked questions about shipping, returns, and our handcrafted dice. Based in Queensland, Australia.",
 }
 
 const shippingFaqs = [
   {
     q: "How long does shipping take?",
-    a: "Standard shipping within the US takes 7-14 business days. International orders typically arrive within 14-21 business days. We process and ship orders within 1-3 business days of receiving payment.",
+    a: "Standard shipping within Australia typically takes 5-10 business days. Delivery times may vary slightly depending on your state or territory. International orders typically arrive within 14-21 business days. We process and ship orders within 1-3 business days of receiving payment.",
   },
   {
     q: "Do you offer free shipping?",
-    a: "Yes! We offer free standard shipping on all US orders over $75. International shipping rates vary by location and are calculated at checkout.",
+    a: "Yes! We offer free standard shipping on all Australian orders over $75 AUD. International shipping rates vary by destination and are calculated at checkout.",
   },
   {
     q: "Do you ship internationally?",
-    a: "We currently ship to the United States, Canada, United Kingdom, Australia, Germany, France, and Japan. We are working on expanding to more countries.",
+    a: "Yes, we ship worldwide. We are based in North Queensland, Australia and regularly ship to New Zealand, the United Kingdom, the United States, Canada, and many more countries. International shipping costs are calculated at checkout.",
   },
   {
     q: "Can I track my order?",
@@ -37,7 +37,7 @@ const shippingFaqs = [
 const returnsFaqs = [
   {
     q: "What is your return policy?",
-    a: "We accept returns within 30 days of delivery for unused, unopened items in their original packaging. Simply contact us at support@arcanedice.co to initiate a return.",
+    a: "We accept returns within 30 days of delivery for unused, unopened items in their original packaging. Simply contact us at support@arcanedice.com.au to initiate a return. Australian Consumer Law guarantees apply to all purchases.",
   },
   {
     q: "What if my dice arrive damaged?",

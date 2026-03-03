@@ -6,9 +6,9 @@ import { startCheckoutSession } from "@/app/actions/stripe"
 import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-)
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : Promise.resolve(null)
 
 export function CheckoutForm() {
   const { items } = useCart()

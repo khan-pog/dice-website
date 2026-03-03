@@ -5,9 +5,10 @@ import Link from "next/link"
 import { Menu, X, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
+import { SearchBar } from "@/components/search-bar"
 
 const navLinks = [
-  { label: "Shop", href: "/#collection" },
+  { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
@@ -37,6 +38,8 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+
+          <SearchBar />
 
           <Link href="/cart" className="relative" aria-label="Shopping cart">
             <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
@@ -76,6 +79,9 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
           <div className="flex flex-col gap-1 px-6 py-4">
+            <div className="pb-2" onClick={() => setIsOpen(false)}>
+              <SearchBar />
+            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.label}

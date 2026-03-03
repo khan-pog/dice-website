@@ -57,7 +57,7 @@ export function CtaSection() {
           Your Next Critical Hit Starts Here
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8 max-w-lg mx-auto">
-          Join thousands of players who trust Arcane Dice Co. for their most important rolls. Free shipping on orders over $75.
+          Join players across Australia and beyond who trust Arcane Dice Co. for their most important rolls. Free shipping on Australian orders over $75 AUD.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/#collection">

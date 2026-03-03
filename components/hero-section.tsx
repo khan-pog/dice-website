@@ -41,9 +41,9 @@ export function HeroSection() {
             Handcrafted Precision
           </p>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance leading-[1.1]">
-            Roll With
+            Every Roll
             <br />
-            <span className="text-primary">Intention</span>
+            <span className="text-primary">Matters</span>
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
             Premium polyhedral dice, precision-balanced and hand-finished. Each set is a work of art designed for the discerning player.

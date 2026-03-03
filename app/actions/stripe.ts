@@ -1,7 +1,7 @@
 "use server"
 
 import { stripe } from "@/lib/stripe"
-import { PRODUCTS } from "@/lib/products"
+import { resolveProductForCheckout } from "@/lib/products"
 
 interface CartLineItem {
   productId: string
@@ -18,7 +18,7 @@ export async function startCheckoutSession(lineItems: CartLineItem[], origin: st
   }
 
   const stripeLineItems = lineItems.map((item) => {
-    const product = PRODUCTS.find((p) => p.id === item.productId)
+    const product = resolveProductForCheckout(item.productId)
     if (!product) {
       throw new Error(`Product with id "${item.productId}" not found`)
     }

@@ -70,7 +70,7 @@ export default function AboutPage() {
               <span className="text-primary">For Adventurers</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Arcane Dice Co. was born at a kitchen table during a late-night D&D session. We wanted dice that felt as legendary as the quests we embarked on -- so we decided to make them ourselves.
+              Arcane Dice Co. was born at a kitchen table in Queensland during a late-night D&amp;D session. We wanted dice that felt as legendary as the quests we embarked on — so we decided to make them ourselves.
             </p>
           </div>
         </section>
@@ -91,7 +91,7 @@ export default function AboutPage() {
                   From Hobby to Workshop
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  What started as a passion project in 2020 has grown into a dedicated workshop of artisans and enthusiasts. We hand-pour, hand-polish, and hand-inspect every single die that leaves our studio.
+                  What started as a passion project in Queensland has grown into a dedicated workshop of artisans and enthusiasts. We hand-pour, hand-polish, and hand-inspect every single die that leaves our studio.
                 </p>
                 <p className="text-muted-foreground leading-relaxed mb-4">
                   Our collections are inspired by the worlds we love -- dark fantasy, cosmic horror, ancient mythology, and the boundless imagination of tabletop gaming.

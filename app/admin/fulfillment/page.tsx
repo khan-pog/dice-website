@@ -1,7 +1,10 @@
 import Link from "next/link"
+import { ExternalLink } from "lucide-react"
 import { markFulfilledAction } from "./actions"
 import { convexClient, convexFns } from "@/lib/convex"
+import { resolveSupplierInfo } from "@/lib/products"
 import { Button } from "@/components/ui/button"
+import { CopyAddressButton } from "@/components/admin/copy-address-button"
 
 function formatMoney(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
@@ -11,6 +14,7 @@ function formatMoney(cents: number, currency: string) {
 }
 
 type LineItem = {
+  productId: string
   quantity: number
   productName: string
   unitAmount: number
@@ -35,15 +39,22 @@ type Order = {
   }
 }
 
-function ShippingAddress({ address }: { address: Order["shippingAddress"] }) {
-  if (!address) return <p className="text-muted-foreground italic">No address on file</p>
-  const parts = [
+function formatAddressString(address: Order["shippingAddress"]): string {
+  if (!address) return ""
+  return [
     address.line1,
     address.line2,
     [address.city, address.state].filter(Boolean).join(", "),
     address.postalCode,
     address.country,
-  ].filter(Boolean)
+  ]
+    .filter(Boolean)
+    .join("\n")
+}
+
+function ShippingAddress({ address }: { address: Order["shippingAddress"] }) {
+  if (!address) return <p className="text-muted-foreground italic">No address on file</p>
+  const parts = formatAddressString(address).split("\n")
   if (parts.length === 0) return <p className="text-muted-foreground italic">No address on file</p>
   return (
     <div className="space-y-0.5">
@@ -105,22 +116,53 @@ export default async function FulfillmentQueuePage() {
 
                   {/* Shipping address */}
                   <div className="space-y-1">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ship To</p>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ship To</p>
+                      {order.shippingAddress && (
+                        <CopyAddressButton address={formatAddressString(order.shippingAddress)} />
+                      )}
+                    </div>
                     <ShippingAddress address={order.shippingAddress} />
                   </div>
                 </div>
 
-                {/* Line items */}
-                <div className="space-y-1 text-sm border-t pt-3">
+                {/* Line items with AliExpress links */}
+                <div className="space-y-2 text-sm border-t pt-3">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Items</p>
-                  {order.lineItems.map((item, idx) => (
-                    <div key={idx} className="flex justify-between">
-                      <span>{item.quantity} × {item.productName}</span>
-                      <span className="text-muted-foreground">
-                        {formatMoney(item.unitAmount * item.quantity, item.currency)}
-                      </span>
-                    </div>
-                  ))}
+                  {order.lineItems.map((item, idx) => {
+                    const { url: supplierUrl, variantNote } = resolveSupplierInfo(item.productId)
+                    return (
+                      <div key={idx} className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="flex-1">{item.quantity} × {item.productName}</span>
+                        <span className="text-muted-foreground shrink-0">
+                          {formatMoney(item.unitAmount * item.quantity, item.currency)}
+                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {variantNote && (
+                            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
+                              {variantNote}
+                            </span>
+                          )}
+                          {supplierUrl ? (
+                            <a
+                              href={supplierUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition-colors"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Order on AliExpress
+                            </a>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-muted text-muted-foreground cursor-not-allowed">
+                              <ExternalLink className="h-3 w-3" />
+                              No supplier link
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
 
                 {/* Fulfillment form */}
