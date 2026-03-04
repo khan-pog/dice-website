@@ -9,7 +9,7 @@ import { PRODUCTS, formatPrice } from "@/lib/products"
 import { useCart } from "@/lib/cart-context"
 import type { Product } from "@/lib/products"
 
-function ProductCard({
+export function ProductCard({
   product,
   index,
 }: {
@@ -92,13 +92,24 @@ function ProductCard({
             {product.shortDescription}
           </p>
         </Link>
-        <Button
-          className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors gap-2"
-          onClick={() => addItem(product)}
-        >
-          <ShoppingCart className="h-4 w-4" />
-          Add to Cart
-        </Button>
+        {product.variants && product.variants.length > 0 ? (
+          <Button
+            className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors gap-2"
+            asChild
+          >
+            <Link href={`/product/${product.id}`}>
+              View Options ({product.variants.length + 1})
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            className="w-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors gap-2"
+            onClick={() => addItem(product)}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Add to Cart
+          </Button>
+        )}
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ export function RollingBanner() {
   const ref = useRef<HTMLDivElement>(null)
   const [diceRow, setDiceRow] = useState([1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6])
   const [rolling, setRolling] = useState(false)
+  const lastRollTime = useRef(0)
 
   const rollAll = useCallback(() => {
     setRolling(true)
@@ -30,7 +31,11 @@ export function RollingBanner() {
       if (!ref.current) return
       const rect = ref.current.getBoundingClientRect()
       const inView = rect.top < window.innerHeight && rect.bottom > 0
-      if (inView) rollAll()
+      const now = Date.now()
+      if (inView && now - lastRollTime.current > 2000) {
+        lastRollTime.current = now
+        rollAll()
+      }
     }
 
     let ticking = false

@@ -11,7 +11,7 @@ export function Footer() {
               <span className="font-bold text-foreground">Arcane Dice Co.</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Handcrafted premium dice for tabletop gaming enthusiasts worldwide.
+              Handcrafted premium dice, made with care in Queensland, Australia. Shipped across Australia and worldwide.
             </p>
           </div>
 

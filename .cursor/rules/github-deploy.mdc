@@ -1,0 +1,55 @@
+---
+description: Rules for committing and deploying this project to the GitHub repository at HRBlackwood/Arcane-Dice
+alwaysApply: true
+---
+
+# GitHub Deploy — Arcane Dice Co.
+
+**Target repository:** `https://github.com/HRBlackwood/Arcane-Dice.git`
+
+## One-time setup (if not already done)
+
+Add the target repo as a remote named `arcane`:
+
+```bash
+git remote add arcane https://github.com/HRBlackwood/Arcane-Dice.git
+```
+
+Verify both remotes are present:
+
+```bash
+git remote -v
+# origin   https://github.com/khan-pog/dice-website.git
+# arcane   https://github.com/HRBlackwood/Arcane-Dice.git
+```
+
+## Deploy workflow
+
+When the user asks to "deploy", "push to GitHub", or "commit and push", always follow this sequence:
+
+```bash
+# 1. Stage all changes
+git add .
+
+# 2. Commit with a descriptive message
+git commit -m "your message here"
+
+# 3. Push to HRBlackwood/Arcane-Dice
+git push arcane main
+```
+
+If the branch is not `main`, replace `main` with the current branch name (`git branch --show-current`).
+
+## Commit message conventions
+
+- `feat:` — new feature or product added
+- `fix:` — bug fix
+- `update:` — content or copy changes (products, location, text)
+- `style:` — visual/CSS changes only
+- `chore:` — config, deps, gitignore changes
+
+## Never do
+
+- Never force push to `main` unless the user explicitly requests it
+- Never commit `.env.local`, `.clerk/`, or any file matching `.env*.local`
+- Never push the `.next/` build folder (it is gitignored)
