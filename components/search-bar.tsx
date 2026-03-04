@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { PRODUCTS, formatPrice } from "@/lib/products"
@@ -60,7 +60,7 @@ export function SearchBar() {
   const containerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  const results = getResults(query)
+  const results = useMemo(() => (open ? getResults(query) : []), [open, query])
 
   useEffect(() => {
     if (open) inputRef.current?.focus()

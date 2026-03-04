@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { ShoppingCart, Minus, Plus, ArrowLeft, Check, Package, Shield, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -30,9 +30,13 @@ export function ProductDetailClient({ product, initialVariantId }: ProductDetail
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     initialVariantId ?? fallbackVariantId
   )
-  const selectedVariant: ProductVariant | null = selectedVariantId
-    ? (product.variants?.find((v) => v.id === selectedVariantId) ?? null)
-    : null
+  const selectedVariant: ProductVariant | null = useMemo(
+    () =>
+      selectedVariantId
+        ? (product.variants?.find((v) => v.id === selectedVariantId) ?? null)
+        : null,
+    [product.variants, selectedVariantId]
+  )
 
   useEffect(() => {
     setSelectedVariantId(initialVariantId ?? fallbackVariantId)
@@ -44,17 +48,20 @@ export function ProductDetailClient({ product, initialVariantId }: ProductDetail
   const displayMaterial = selectedVariant?.material ?? product.material
   const displayFeatures = selectedVariant?.features ?? product.features
   const displayPrice = selectedVariant?.priceInCents ?? product.priceInCents
-  const allProductImages =
-    product.variants && product.variants.length > 0
-      ? Array.from(
-          new Set([
-            ...product.variants[0].images,
-            ...product.variants.slice(1).flatMap((variant) =>
-              variant.images[0] ? [variant.images[0]] : []
-            ),
-          ])
-        )
-      : Array.from(new Set(product.images))
+  const allProductImages = useMemo(
+    () =>
+      product.variants && product.variants.length > 0
+        ? Array.from(
+            new Set([
+              ...product.variants[0].images,
+              ...product.variants.slice(1).flatMap((variant) =>
+                variant.images[0] ? [variant.images[0]] : []
+              ),
+            ])
+          )
+        : Array.from(new Set(product.images)),
+    [product.images, product.variants]
+  )
 
   const handleAdd = () => {
     const cartProduct = selectedVariant
