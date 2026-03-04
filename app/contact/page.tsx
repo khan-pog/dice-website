@@ -45,17 +45,17 @@ export default function ContactPage() {
               <div className="p-6 bg-card rounded-xl border border-border">
                 <Mail className="h-6 w-6 text-primary mb-3" />
                 <h3 className="font-bold text-foreground mb-1">Email</h3>
-                <p className="text-sm text-muted-foreground">support@arcanedice.com.au</p>
+                <p className="text-sm text-muted-foreground">support@arcanedice.co</p>
               </div>
               <div className="p-6 bg-card rounded-xl border border-border">
                 <Clock className="h-6 w-6 text-primary mb-3" />
                 <h3 className="font-bold text-foreground mb-1">Response Time</h3>
-                <p className="text-sm text-muted-foreground">Within 24 hours on business days (AEST)</p>
+                <p className="text-sm text-muted-foreground">Within 24 hours on business days</p>
               </div>
               <div className="p-6 bg-card rounded-xl border border-border">
                 <MapPin className="h-6 w-6 text-primary mb-3" />
                 <h3 className="font-bold text-foreground mb-1">Location</h3>
-                <p className="text-sm text-muted-foreground">Queensland, Australia</p>
+                <p className="text-sm text-muted-foreground">Portland, Oregon, USA</p>
               </div>
             </div>
 

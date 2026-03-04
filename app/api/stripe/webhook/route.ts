@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
-import { getStripe } from "@/lib/stripe"
+import { stripe } from "@/lib/stripe"
 import { convexClient, convexFns } from "@/lib/convex"
 import { normalizeCheckoutToOrderPayload } from "@/lib/stripe-order"
 import { sendOrderConfirmationEmail } from "@/lib/email"
-
-// #region agent log
-fetch('http://127.0.0.1:7720/ingest/f96776db-0993-49ff-a7d7-744901e4e243',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3d8b1'},body:JSON.stringify({sessionId:'e3d8b1',runId:'pre-fix',hypothesisId:'H2',location:'app/api/stripe/webhook/route.ts:8',message:'webhook route module loaded',data:{loaded:true},timestamp:Date.now()})}).catch(()=>{});
-// #endregion
 
 function getWebhookSecret() {
   const secret = process.env.STRIPE_WEBHOOK_SECRET
@@ -18,9 +14,6 @@ function getWebhookSecret() {
 }
 
 export async function POST(request: Request) {
-  // #region agent log
-  fetch('http://127.0.0.1:7720/ingest/f96776db-0993-49ff-a7d7-744901e4e243',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'e3d8b1'},body:JSON.stringify({sessionId:'e3d8b1',runId:'pre-fix',hypothesisId:'H2',location:'app/api/stripe/webhook/route.ts:21',message:'webhook POST entered',data:{hasSignature:Boolean(request.headers.get("stripe-signature"))},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   const signature = request.headers.get("stripe-signature")
   if (!signature) {
     return NextResponse.json(
@@ -33,7 +26,6 @@ export async function POST(request: Request) {
   let event: Stripe.Event
 
   try {
-    const stripe = getStripe()
     event = stripe.webhooks.constructEvent(rawBody, signature, getWebhookSecret())
   } catch (error) {
     const message =
@@ -44,8 +36,6 @@ export async function POST(request: Request) {
   if (event.type !== "checkout.session.completed") {
     return NextResponse.json({ received: true })
   }
-
-  const stripe = getStripe()
 
   const session = event.data.object as Stripe.Checkout.Session
   const convex = convexClient()

@@ -1,0 +1,2 @@
+{"sessionId":"e3d8b1","runId":"pre-fix","hypothesisId":"H5","location":"lib/stripe.ts:6","message":"stripe module loaded (lazy mode)","data":{"hasStripeSecretKey":false},"timestamp":1772601980807}
+{"sessionId":"e3d8b1","runId":"pre-fix","hypothesisId":"H2","location":"app/api/stripe/webhook/route.ts:8","message":"webhook route module loaded","data":{"loaded":true},"timestamp":1772601980846}
