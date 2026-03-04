@@ -95,6 +95,9 @@ export function Footer() {
             <Link href="/faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Terms of Service
             </Link>
+            <Link href="/admin/fulfillment" className="text-xs text-muted-foreground/80 hover:text-foreground transition-colors">
+              Admin
+            </Link>
           </div>
         </div>
       </div>
