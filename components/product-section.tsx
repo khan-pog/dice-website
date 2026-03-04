@@ -116,6 +116,36 @@ export function ProductCard({
 }
 
 export function ProductSection() {
+  useEffect(() => {
+    const productsWithoutImages = PRODUCTS.filter((product) => product.images.length === 0).map((p) => p.id)
+    const variantsWithoutImages = PRODUCTS.flatMap((product) =>
+      (product.variants ?? [])
+        .filter((variant) => variant.images.length === 0)
+        .map((variant) => `${product.id}:${variant.id}`)
+    )
+
+    // #region agent log
+    fetch("http://127.0.0.1:7648/ingest/d1a6dcb4-be14-4c1b-8ea0-c69b7b07ec7c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "615bf6" },
+      body: JSON.stringify({
+        sessionId: "615bf6",
+        runId: "store-debug-pre-fix",
+        hypothesisId: "H3",
+        location: "components/product-section.tsx:ProductSection",
+        message: "ProductSection mounted with catalog stats",
+        data: {
+          productCount: PRODUCTS.length,
+          productsWithoutImages,
+          variantsWithoutImages,
+          variantCount: PRODUCTS.reduce((total, product) => total + (product.variants?.length ?? 0), 0),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {})
+    // #endregion
+  }, [])
+
   return (
     <section id="collection" className="py-24 px-6">
       <div className="mx-auto max-w-7xl">

@@ -17,6 +17,23 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { totalItems } = useCart()
+  const logNavEvent = (message: string, data: Record<string, unknown>, hypothesisId: string) => {
+    // #region agent log
+    fetch("http://127.0.0.1:7648/ingest/d1a6dcb4-be14-4c1b-8ea0-c69b7b07ec7c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "615bf6" },
+      body: JSON.stringify({
+        sessionId: "615bf6",
+        runId: "store-debug-pre-fix",
+        hypothesisId,
+        location: "components/navbar.tsx:Navbar",
+        message,
+        data,
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {})
+    // #endregion
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -34,6 +51,13 @@ export function Navbar() {
               key={link.label}
               href={link.href}
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() =>
+                logNavEvent(
+                  "Desktop nav link selected",
+                  { label: link.label, href: link.href },
+                  "H1"
+                )
+              }
             >
               {link.label}
             </Link>
@@ -87,7 +111,14 @@ export function Navbar() {
                 key={link.label}
                 href={link.href}
                 className="py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  logNavEvent(
+                    "Mobile nav link selected",
+                    { label: link.label, href: link.href },
+                    "H1"
+                  )
+                  setIsOpen(false)
+                }}
               >
                 {link.label}
               </Link>
