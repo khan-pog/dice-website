@@ -1,6 +1,6 @@
 "use server"
 
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import { PRODUCTS } from "@/lib/products"
 
 interface CartLineItem {
@@ -36,6 +36,7 @@ export async function startCheckoutSession(lineItems: CartLineItem[], origin: st
     }
   })
 
+  const stripe = getStripe()
   const session = await stripe.checkout.sessions.create({
     line_items: stripeLineItems,
     mode: "payment",

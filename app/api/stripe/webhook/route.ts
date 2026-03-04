@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import { convexClient, convexFns } from "@/lib/convex"
 import { normalizeCheckoutToOrderPayload } from "@/lib/stripe-order"
 import { sendOrderConfirmationEmail } from "@/lib/email"
@@ -14,6 +14,7 @@ function getWebhookSecret() {
 }
 
 export async function POST(request: Request) {
+  const stripe = getStripe()
   const signature = request.headers.get("stripe-signature")
   if (!signature) {
     return NextResponse.json(
