@@ -8,7 +8,11 @@ interface CartLineItem {
   quantity: number
 }
 
-export async function startCheckoutSession(lineItems: CartLineItem[], origin: string) {
+export async function startCheckoutSession(
+  lineItems: CartLineItem[],
+  origin: string,
+  discountPercent = 0
+) {
   if (!lineItems.length) {
     throw new Error("Cart is empty")
   }
@@ -17,11 +21,20 @@ export async function startCheckoutSession(lineItems: CartLineItem[], origin: st
     throw new Error("Invalid checkout origin")
   }
 
+  const safeDiscountPercent = Number.isFinite(discountPercent)
+    ? Math.min(20, Math.max(0, Math.floor(discountPercent)))
+    : 0
+
   const stripeLineItems = lineItems.map((item) => {
     const product = PRODUCTS.find((p) => p.id === item.productId)
     if (!product) {
       throw new Error(`Product with id "${item.productId}" not found`)
     }
+
+    const discountedUnitAmount = Math.max(
+      1,
+      Math.round(product.priceInCents * (100 - safeDiscountPercent) / 100)
+    )
 
     return {
       price_data: {
@@ -30,7 +43,7 @@ export async function startCheckoutSession(lineItems: CartLineItem[], origin: st
           name: product.name,
           description: product.shortDescription,
         },
-        unit_amount: product.priceInCents,
+        unit_amount: discountedUnitAmount,
       },
       quantity: item.quantity,
     }
@@ -43,6 +56,7 @@ export async function startCheckoutSession(lineItems: CartLineItem[], origin: st
     allow_promotion_codes: true,
     metadata: {
       cart: JSON.stringify(lineItems),
+      d20DiscountPercent: String(safeDiscountPercent),
       source: "arcane-dice-web",
     },
     success_url: `${origin}/checkout?status=success`,
