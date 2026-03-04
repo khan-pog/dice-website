@@ -10,6 +10,7 @@ import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/products"
 import { loadStripe } from "@stripe/stripe-js"
 import { startCheckoutSession } from "@/app/actions/stripe"
+import { D20RollWidget } from "@/components/d20-roll-widget"
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -19,9 +20,11 @@ export default function CartPage() {
   const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart()
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [checkoutError, setCheckoutError] = useState("")
+  const [discountCents, setDiscountCents] = useState(0)
 
   const shippingFree = totalPrice >= 7500
   const shippingCost = shippingFree ? 0 : 595
+  const grandTotal = Math.max(0, totalPrice + shippingCost - discountCents)
 
   async function handleProceedToCheckout() {
     setCheckoutError("")
@@ -38,7 +41,11 @@ export default function CartPage() {
         quantity: item.quantity,
       }))
 
-      const sessionId = await startCheckoutSession(lineItems, window.location.origin)
+      const sessionId = await startCheckoutSession(
+        lineItems,
+        window.location.origin,
+        discountCents > 0 ? discountCents : undefined,
+      )
       const result = await stripe.redirectToCheckout({ sessionId })
 
       if (result.error?.message) {
@@ -160,13 +167,24 @@ export default function CartPage() {
                         Free shipping on orders over $75.00
                       </p>
                     )}
+                    {discountCents > 0 && (
+                      <div className="flex justify-between text-yellow-400">
+                        <span className="font-medium flex items-center gap-1">
+                          <span>🎲</span> Fortune Roll
+                        </span>
+                        <span className="font-bold">−{formatPrice(discountCents)}</span>
+                      </div>
+                    )}
                     <div className="border-t border-border pt-3 flex justify-between">
                       <span className="font-bold text-foreground">Total</span>
                       <span className="font-bold text-foreground text-lg">
-                        {formatPrice(totalPrice + shippingCost)}
+                        {formatPrice(grandTotal)}
                       </span>
                     </div>
                   </div>
+
+                  {/* D20 Fortune Roll widget */}
+                  <D20RollWidget onDiscount={(cents) => setDiscountCents(cents)} />
 
                   <Button
                     onClick={handleProceedToCheckout}
